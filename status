@@ -1,0 +1,12 @@
+#!/bin/sh
+
+mpd_status="$(mpc | grep 'playing\|paused' | awk '{print $1}')"
+current_time="$(date '+%d/%m/%y, %H:%M CET')"
+
+if [ "$mpd_status" == "[playing]" ]; then
+    echo "♫ MPD:PLAYING, $current_time"
+elif [ "$mpd_status" == "[paused]" ]; then
+    echo "♫ MPD:PAUSED, $current_time"
+else
+    echo "♫ MPD:STOPPED, $current_time"
+fi

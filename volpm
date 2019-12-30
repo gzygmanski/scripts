@@ -1,0 +1,46 @@
+#!/bin/bash
+
+helpFunction()
+{
+    echo ""
+    echo "Usage: $0 -s [default|mpd] -i/-d [0-9]"
+    echo -e "\t-s [source] is using pamixer [default] or mpc [mpd] depending on paramater"
+    echo -e "\t-i [increase] icrease volume by specified number"
+    echo -e "\t-d [decrease] decrease volume by specified number"
+    exit 1
+}
+
+while getopts "s:i:d:" opt
+do
+    case "$opt" in
+        s ) choosedSource="$OPTARG" ;;
+        i ) increasedValue="$OPTARG" ;;
+        d ) decreasedValue="$OPTARG" ;;
+        ? ) helpFunction ;;
+    esac
+done
+
+
+id="99001" # id of dunst notification
+
+if [ "$choosedSource" == "mpd" ]; then
+    if [[ -z "$increasedValue" ]] && [[ "$decreasedValue" =~ [0-9] ]]; then
+        mpc -q volume "-$decreasedValue"
+        dunstify -u low "MPD volume: $(mpc | grep 'volume' | awk '{print $2}')" -r $id
+    elif [[ -z "$decreasedValue" ]] && [[ "$increasedValue" =~ [0-9] ]]; then
+        mpc -q volume "+$icreasedValue"
+        dunstify -u low "MPD volume: $(mpc | grep 'volume' | awk '{print $2}')" -r $id
+    else
+        helpFunction
+    fi
+else 
+    if [[ -z "$increasedValue" ]] && [[ "$decreasedValue" =~ [0-9] ]]; then
+        pamixer -d $decreasedValue
+        dunstify -u low "Volume: $(pamixer --get-volume-human)" -r $id
+    elif [[ -z "$decreasedValue" ]] && [[ "$increasedValue" =~ [0-9] ]]; then
+        pamixer -i $increasedValue
+        dunstify -u low "Volume: $(pamixer --get-volume-human)" -r $id
+    else
+        helpFunction
+    fi
+fi
