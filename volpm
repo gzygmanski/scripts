@@ -25,10 +25,12 @@ id="99001" # id of dunst notification
 
 if [ "$choosedSource" == "mpd" ]; then
     if [[ -z "$increasedValue" ]] && [[ "$decreasedValue" =~ [0-9] ]]; then
-        mpc -q volume "-$decreasedValue"
+        value="-$decreasedValue"
+        mpc -q volume $value
         dunstify -u low "MPD volume: $(mpc | grep 'volume' | awk '{print $2}')" -r $id
     elif [[ -z "$decreasedValue" ]] && [[ "$increasedValue" =~ [0-9] ]]; then
-        mpc -q volume "+$icreasedValue"
+        value="+$increasedValue"
+        mpc -q volume $value
         dunstify -u low "MPD volume: $(mpc | grep 'volume' | awk '{print $2}')" -r $id
     else
         helpFunction
