@@ -1,0 +1,8 @@
+#!/bin/sh
+
+ID=99003
+ARTIST="$(mpc current --format '%artist%')"
+SONG="$(mpc current --format '%album%\n%title%')"
+
+dunstify -u normal "♫ $ARTIST" "$SONG" -r $ID
+

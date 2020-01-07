@@ -27,11 +27,13 @@ if [ "$choosedSource" == "mpd" ]; then
     if [[ -z "$increasedValue" ]] && [[ "$decreasedValue" =~ [0-9] ]]; then
         value="-$decreasedValue"
         mpc -q volume $value
-        dunstify -u low "MPD volume: $(mpc | grep 'volume' | awk '{print $2}')" -r $id
+        dunstify -u low "MPD volume: $(mpc volume | awk '{print substr($0,8)}' | sed 's/ //g'
+)" -r $id
     elif [[ -z "$decreasedValue" ]] && [[ "$increasedValue" =~ [0-9] ]]; then
         value="+$increasedValue"
         mpc -q volume $value
-        dunstify -u low "MPD volume: $(mpc | grep 'volume' | awk '{print $2}')" -r $id
+        dunstify -u low "MPD volume: $(mpc volume | awk '{print substr($0,8)}' | sed 's/ //g'
+)" -r $id
     else
         helpFunction
     fi

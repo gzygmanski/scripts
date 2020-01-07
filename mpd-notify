@@ -2,4 +2,4 @@
 
 while true; do
     dunstify -u normal "♫ Now Playing" "$(mpc current --wait)" -r "99000"
-done &
+done 
