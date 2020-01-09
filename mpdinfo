@@ -1,8 +1,15 @@
-#!/bin/sh
+#!/bin/zsh
 
 ID=99003
 ARTIST="$(mpc current --format '%artist%')"
-SONG="$(mpc current --format '%album%\n%title%')"
+ALBUM="$(mpc current --format '%album%')"
+SONG="$(mpc current --format '%title%')"
+ALBUM_PATH="$(echo /mnt/nfs/priv-media/music/$(mpc current -f %file%)|sed 's_\(.*\)/\(.*\)/\(.*\)_\1/\2/_')"
+ALBUM_COVER="$(find $ALBUM_PATH -iname 'cover.*'|grep -m1 '')"
 
-dunstify -u normal "♫ $ARTIST" "$SONG" -r $ID
+if [[ -n $ALBUM_COVER ]] && [[ -a $ALBUM_COVER ]]; then
+    dunstify -u normal -i "$ALBUM_COVER" " $SONG" "\n$ALBUM\n---\n$ARTIST" -r $ID
+else
+    dunstify -u normal -i "~/scripts/empty-album-cover.png" " $SONG" "\n$ALBUM\n---\n$ARTIST" -r $ID
+fi
 

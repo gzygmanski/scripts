@@ -3,14 +3,14 @@
 while true; do
     mpd_status="$(mpc | grep 'playing\|paused' | awk '{print $1}')"
     mpd_time="$(mpc | grep 'playing\|paused' | awk '{print $3}')"
-    current_time="$(date '+%d/%m/%y, %H:%M CET')"
+    current_time="$(date '+%d/%m/%y  %H:%M CET')"
 
     if [ "$mpd_status" == "[playing]" ]; then
-        xsetroot -name "♫ <$mpd_time>, $current_time"
+        xsetroot -name " $mpd_time  $current_time"
     elif [ "$mpd_status" == "[paused]" ]; then
-        xsetroot -name "♫ <P>, $current_time"
+        xsetroot -name " (P)  $current_time"
     else
-        xsetroot -name "♫ <S>, $current_time"
+        xsetroot -name " (S)  $current_time"
     fi
     sleep 0.35
 done
