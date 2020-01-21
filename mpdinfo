@@ -4,12 +4,13 @@ ID=99003
 ARTIST="$(mpc current --format '%artist%')"
 ALBUM="$(mpc current --format '%album%')"
 SONG="$(mpc current --format '%title%')"
+
 ALBUM_PATH="$(echo /mnt/nfs/priv-media/music/$(mpc current -f %file%)|sed 's_\(.*\)/\(.*\)/\(.*\)_\1/\2/_')"
 ALBUM_COVER="$(find $ALBUM_PATH -iname 'cover.*'|grep -m1 '')"
-
+EMPTY_ALBUM_COVER="$HOME/scripts/empty-album-cover.png"
 if [[ -n $ALBUM_COVER ]] && [[ -a $ALBUM_COVER ]]; then
-    dunstify -u normal -i "$ALBUM_COVER" "  $SONG" " $ALBUM\n ===\n $ARTIST" -r $ID
+    dunstify -u normal -i $ALBUM_COVER "  $SONG" " $ALBUM\n ===\n $ARTIST" -r $ID
 else
-    dunstify -u normal -i "~/scripts/empty-album-cover.png" "  $SONG" " $ALBUM\n ===\n $ARTIST" -r $ID
+    dunstify -u normal -i $EMPTY_ALBUM_COVER "  $SONG" " $ALBUM\n ===\n $ARTIST" -r $ID
 fi
 

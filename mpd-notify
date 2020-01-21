@@ -1,8 +1,8 @@
 #!/bin/zsh
 
 ID=99000
-COVER_PATH='/tmp/cover.png'
-EMPTY_COVER_PATH='/home/shiss/scripts/empty-album-cover.png'
+COVER_PATH="/tmp/cover.png"
+EMPTY_COVER_PATH="$HOME/scripts/empty-album-cover.png""
 
 while true; do
     CURRENT_SONG_INFO="$(mpc current --wait)"
@@ -15,4 +15,4 @@ while true; do
     fi
 
     dunstify -u normal -i "$COVER_PATH" " Now Playing" "$CURRENT_SONG_INFO" -r "99000"
-done 
+done
