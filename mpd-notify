@@ -1,38 +1,40 @@
 #!/bin/zsh
 
 ID=99000
-RATING=$(mpc sticker "$(mpc current -f '%file%')" list |grep 'stars' |sed -e 's/[^0-9]/ /g' -e 's/^ *//g')
-FAVOURITE=$(mpc sticker "$(mpc current -f '%file%')" list |grep 'favourite' |sed -e 's/[^0-9]/ /g' -e 's/^ *//g')
-
-if [[ -n $RATING ]]; then
-    case "$RATING" in
-    "1") RATE="  " ;;
-    "2") RATE="  " ;;
-    "3") RATE="  " ;;
-    "4") RATE="  " ;;
-    "5") RATE="  " ;;
-    esac
-else
-    RATE="  "
-fi
-
-if [[ -n $FAVOURITE ]]; then
-    case "$FAVOURITE" in
-    "0") FAVICO=" " ;;
-    "1") FAVICO=" " ;;
-    esac
-else
-    FAVICO=" "
-fi
-
-
 COVER_PATH="/tmp/cover.png"
 EMPTY_COVER_PATH="$HOME/scripts/empty-album-cover.png"
 
-while true; do
+getdata() {
     CURRENT_SONG_INFO="$(mpc current --wait)"
     ALBUM_PATH="$(echo /mnt/nfs/priv-media/music/$(mpc current -f %file%)|sed 's_\(.*\)/\(.*\)/\(.*\)_\1/\2/_')"
-    ALBUM_COVER="$(find $ALBUM_PATH -iname 'cover.*'|grep -m1 '')"
+    ALBUM_COVER="$(find $ALBUM_PATH -iname 'cover.*'|grep -m1 '')"    
+    RATING=$(mpc sticker "$(mpc current -f '%file%')" list |grep 'stars' |sed -e 's/[^0-9]/ /g' -e 's/^ *//g')
+    FAVOURITE=$(mpc sticker "$(mpc current -f '%file%')" list |grep 'favourite' |sed -e 's/[^0-9]/ /g' -e 's/^ *//g')
+
+    if [[ -n $RATING ]]; then
+        case "$RATING" in
+        "1") RATE="  " ;;
+        "2") RATE="  " ;;
+        "3") RATE="  " ;;
+        "4") RATE="  " ;;
+        "5") RATE="  " ;;
+        esac
+    else
+        RATE="  "
+    fi
+
+    if [[ -n $FAVOURITE ]]; then
+        case "$FAVOURITE" in
+        "0") FAVICO=" " ;;
+        "1") FAVICO=" " ;;
+        esac
+    else
+        FAVICO=" "
+    fi
+}
+
+while true; do
+    getdata
     if [[ -n $ALBUM_COVER ]] && [[ -a $ALBUM_COVER ]]; then
         convert $ALBUM_COVER -resize 40x40 $COVER_PATH
     else
