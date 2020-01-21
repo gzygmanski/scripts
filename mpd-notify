@@ -1,5 +1,18 @@
-#!/bin/sh
+#!/bin/zsh
+
+ID=99000
+COVER_PATH='/tmp/cover.png'
+EMPTY_COVER_PATH='/home/shiss/scripts/empty-album-cover.png'
 
 while true; do
-    dunstify -u normal " Now Playing" "$(mpc current --wait)" -r "99000"
+    CURRENT_SONG_INFO="$(mpc current --wait)"
+    ALBUM_PATH="$(echo /mnt/nfs/priv-media/music/$(mpc current -f %file%)|sed 's_\(.*\)/\(.*\)/\(.*\)_\1/\2/_')"
+    ALBUM_COVER="$(find $ALBUM_PATH -iname 'cover.*'|grep -m1 '')"
+    if [[ -n $ALBUM_COVER ]] && [[ -a $ALBUM_COVER ]]; then
+        convert $ALBUM_COVER -resize 40x40 $COVER_PATH
+    else
+        convert $EMPTY_COVER_PATH -resize 40x40 $COVER_PATH
+    fi
+
+    dunstify -u normal -i "$COVER_PATH" " Now Playing" "$CURRENT_SONG_INFO" -r "99000"
 done 
