@@ -1,0 +1,11 @@
+#!/bin/sh
+
+if [[ -n "$1" ]]; then
+  case "$1" in
+  "0" ) mpc sticker "$(mpc current -f '%file%')" set "favourite" "0" && mpdinfo ;;
+  "1" ) mpc sticker "$(mpc current -f '%file%')" set "favourite" "1" && mpdinfo ;;
+  "2" ) mpc sticker "$(mpc current -f '%file%')" delete "favourite" && mpdinfo ;;
+  * ) echo "choose number in range [0-2]" ;;
+  esac
+fi
+

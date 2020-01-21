@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [[ -n "$1" ]]; then
+  case "$1" in
+  "0" ) mpc sticker "$(mpc current -f '%file%')" delete "stars" && mpdinfo ;;
+  "1" ) mpc sticker "$(mpc current -f '%file%')" set "stars" "1" && mpdinfo ;;
+  "2" ) mpc sticker "$(mpc current -f '%file%')" set "stars" "2" && mpdinfo ;;
+  "3" ) mpc sticker "$(mpc current -f '%file%')" set "stars" "3" && mpdinfo ;;
+  "4" ) mpc sticker "$(mpc current -f '%file%')" set "stars" "4" && mpdinfo ;;
+  "5" ) mpc sticker "$(mpc current -f '%file%')" set "stars" "5" && mpdinfo ;;
+  * ) echo "choose number in range [0-5])" ;;
+  esac
+fi
