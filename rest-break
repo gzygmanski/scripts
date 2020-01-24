@@ -1,0 +1,26 @@
+#!/bin/sh
+
+ID=90004
+REST_AFTER=3300
+BREAK_ICO="$HOME/scripts/break.png"
+BREAK_TIME=5
+
+initBreak() {
+  local COUNTER=$1
+  local ICON=$2
+  local ID=$3
+
+  while [ $COUNTER -gt 0 ]; do
+    dunstify -u critical -i "$ICON" " Take a break!" " $COUNTER minutes remaining" -r $ID
+    (( COUNTER-- ))
+    sleep 60
+  done
+}
+
+
+while true; do
+  sleep $REST_AFTER
+  initBreak $BREAK_TIME $BREAK_ICO $ID 
+  killall dunst
+done
+

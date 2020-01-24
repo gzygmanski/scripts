@@ -25,7 +25,6 @@ else
     FAVICO=" "
 fi
 
-# RATE="   "
 ARTIST="$(mpc current --format '%artist%')"
 ALBUM="$(mpc current --format '%album%')"
 SONG="$(mpc current --format '%title%')"
@@ -33,9 +32,13 @@ SONG="$(mpc current --format '%title%')"
 ALBUM_PATH="$(echo /mnt/nfs/priv-media/music/$(mpc current -f %file%)|sed 's_\(.*\)/\(.*\)/\(.*\)_\1/\2/_')"
 ALBUM_COVER="$(find $ALBUM_PATH -iname 'cover.*'|grep -m1 '')"
 EMPTY_ALBUM_COVER="$HOME/scripts/empty-album-cover.png"
+
+DUNST_TITLE="  $SONG"
+DUNST_DESC=" $RATE$FAVICO\n $ALBUM\n by $ARTIST"
+
 if [[ -n $ALBUM_COVER ]] && [[ -a $ALBUM_COVER ]]; then
-    dunstify -u normal -i $ALBUM_COVER "  $SONG" " $ALBUM\n $RATE$FAVICO\n $ARTIST" -r $ID
+    dunstify -u normal -i $ALBUM_COVER $DUNST_TITLE $DUNST_DESC -r $ID
 else
-    dunstify -u normal -i $EMPTY_ALBUM_COVER "  $SONG" " $ALBUM\n $RATE$FAVICO\n $ARTIST" -r $ID
+    dunstify -u normal -i $EMPTY_ALBUM_COVER $DUNST_TITLE $DUNST_DESC -r $ID
 fi
 
