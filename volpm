@@ -22,26 +22,28 @@ done
 
 
 id="99001" # id of dunst notification
+volupico="${HOME}/scripts/volup.png"
+voldownico="${HOME}/scripts/voldown.png"
 
 if [ "$choosedSource" == "mpd" ]; then
     if [[ -z "$increasedValue" ]] && [[ "$decreasedValue" =~ [0-9] ]]; then
         value="-$decreasedValue"
         mpc -q volume $value
-        dunstify -u low " 奔 Volume(mpd): $(mpc volume | awk '{print substr($0,8)}' | sed 's/ //g')" -r $id
+        dunstify -u low -i $voldownico " Volume" " mpd: $(mpc volume | awk '{print substr($0,8)}' | sed 's/ //g')" -r $id
     elif [[ -z "$decreasedValue" ]] && [[ "$increasedValue" =~ [0-9] ]]; then
         value="+$increasedValue"
         mpc -q volume $value
-        dunstify -u low " 墳 Volume(mpd): $(mpc volume | awk '{print substr($0,8)}' | sed 's/ //g')" -r $id
+        dunstify -u low -i $volupico " Volume" " mpd: $(mpc volume | awk '{print substr($0,8)}' | sed 's/ //g')" -r $id
     else
         helpFunction
     fi
 else 
     if [[ -z "$increasedValue" ]] && [[ "$decreasedValue" =~ [0-9] ]]; then
         pamixer -d $decreasedValue
-        dunstify -u low " 奔 Volume(sys): $(pamixer --get-volume-human)" -r $id
+        dunstify -u low -i $voldownico " Volume" " sys: $(pamixer --get-volume-human)" -r $id
     elif [[ -z "$decreasedValue" ]] && [[ "$increasedValue" =~ [0-9] ]]; then
         pamixer -i $increasedValue
-        dunstify -u low " 墳 Volume(sys): $(pamixer --get-volume-human)" -r $id
+        dunstify -u low -i $volupico " Volume" " sys: $(pamixer --get-volume-human)" -r $id
     else
         helpFunction
     fi

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+blue=`tput setaf 4`
+yellow=`tput setaf 3`
+green=`tput setaf 2`
+reset=`tput sgr0`
+rev=`tput rev`
+
+echo -e "${rev}${blue}   $(uname -r) $USER@$(uname -n)  ${reset}"
+echo "${green}:: $(uptime -p |sed 's/up/uptime:/g')${reset}"
+echo "${yellow}:: pkg: $(pacman -Q |wc -l)"

@@ -41,5 +41,5 @@ while true; do
         convert $EMPTY_COVER_PATH -resize 40x40 $COVER_PATH
     fi
 
-    dunstify -u normal -i "$COVER_PATH" "  Now Playing $RATE$FAVICO" " $CURRENT_SONG_INFO" -r "99000"
+    dunstify -u normal -i "$COVER_PATH" " Now Playing $RATE$FAVICO" " $CURRENT_SONG_INFO" -r "99000"
 done

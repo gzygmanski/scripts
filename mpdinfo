@@ -33,8 +33,8 @@ ALBUM_PATH="$(echo /mnt/nfs/priv-media/music/$(mpc current -f %file%)|sed 's_\(.
 ALBUM_COVER="$(find $ALBUM_PATH -iname 'cover.*'|grep -m1 '')"
 EMPTY_ALBUM_COVER="$HOME/scripts/empty-album-cover.png"
 
-DUNST_TITLE="  $SONG"
-DUNST_DESC=" $RATE$FAVICO\n $ALBUM\n by $ARTIST"
+DUNST_TITLE=" $SONG"
+DUNST_DESC=" $ALBUM\n by $ARTIST\n $RATE$FAVICO "
 
 if [[ -n $ALBUM_COVER ]] && [[ -a $ALBUM_COVER ]]; then
     dunstify -u normal -i $ALBUM_COVER $DUNST_TITLE $DUNST_DESC -r $ID
