@@ -1,5 +1,4 @@
 #!/bin/sh
-
 while true; do
     mpd_status="$(mpc | grep 'playing\|paused' | awk '{print $1}')"
     mpd_time="$(mpc | grep 'playing\|paused' | awk '{print $3}')"

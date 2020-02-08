@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-ID=99003
+ID=99000
 RATING=$(mpc sticker "$(mpc current -f '%file%')" list |grep 'stars' |sed -e 's/[^0-9]/ /g' -e 's/^ *//g')
 FAVOURITE=$(mpc sticker "$(mpc current -f '%file%')" list |grep 'favourite' |sed -e 's/[^0-9]/ /g' -e 's/^ *//g')
 
