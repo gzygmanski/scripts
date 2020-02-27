@@ -1,7 +1,7 @@
 #!/bin/sh
 
-color1=14
-color2=4
+color1=8
+color2=15
 color3=5
 
 fg1=`tput setaf ${color1}`
@@ -14,7 +14,9 @@ rev=`tput rev`
 
 sep=" "
 sep2=" "
+# sep=""
+# sep2=""
 
-echo -e "${fg1}${rev}   $(uname -r) ${reset}${fg1}${bg2}${sep}${reset}${fg2}${rev} $USER@$(uname -n) ${reset}${fg1}${bg2}${sep2}${bg1} ${reset}"
+echo -e "${fg1}${bg2}${rev}   $(uname -r) ${reset}${fg1}${bg2}${sep}${reset}${fg2}${bg1}${rev} $USER@$(uname -n) ${reset}${fg1}${bg2}${sep2}${bg1} ${reset}"
 echo "${fg3}:: $(uptime -p |sed 's/up/uptime:/g')${reset}"
-echo "${fg2}:: pkg: $(pacman -Q |wc -l)"
+echo "${fg3}:: pkg: $(pacman -Q |wc -l)"
