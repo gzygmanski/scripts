@@ -17,6 +17,9 @@ To work correctly install:
 ## mpd-rate & mpd-fav
 Adds sticker to currently playing song with rating or favourite state.
 
+## mpv-pip
+Adds pip-like (picture in picture) functionality to the mpv.
+
 ## volpm
 Manage and display notification with volume for default sink and mpd
 

@@ -1,0 +1,64 @@
+#!/bin/sh
+
+winId=$(xdotool search --class mpv)
+if [ -z "$winId" ]; then
+  echo "mpv window not found"
+  exit 1
+fi
+
+# vars
+moveUp=0
+moveDown=0
+
+screenX=1920
+screenY=1080
+winX=426
+winY=240
+panel=23
+margin=5
+borderSize=4 # tested in dual screen setup; window position corrected by size of border*2
+
+let "posX = $screenX - $winX  - $margin - $borderSize"
+let "posY1 = $panel + $margin"
+let "posY2 = $screenY - $winY - $margin - $borderSize"
+
+# functions
+helpFunction()
+{
+  echo ""
+  echo "Usage: $0 --up/--down"
+  echo -e "\t--up: move window to top right of the sreen"
+  echo -e "\t--down: move window to bottom right of the sreen"
+  echo -e "\t--toggle: toggle between play and pause"
+  echo -e "\t--close: close instance of mpv"
+  exit 1
+}
+
+moveWin()
+{
+  xdotool windowsize $1 $4 $5
+  xdotool windowmove $1 $2 $3
+}
+
+toggleMpv()
+{
+  xdotool key --window $1 "space"
+}
+
+closeMpv()
+{
+  xdotool windowclose $1
+}
+
+
+for i in "$@"
+do
+    case $i in
+        --up ) moveWin $winId $posX $posY1 $winX $winY ;;
+        --down ) moveWin $winId $posX $posY2 $winX $winY ;;
+        --toggle ) toggleMpv $winId ;;
+        --close ) closeMpv $winId ;;
+        * ) helpFunction ;;
+    esac
+done
+
