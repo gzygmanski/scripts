@@ -42,7 +42,7 @@ moveWin()
 
 toggleMpv()
 {
-  xdotool key --window $1 "space"
+  xdotool key --clearmodifiers --window $1 "p"
 }
 
 closeMpv()
