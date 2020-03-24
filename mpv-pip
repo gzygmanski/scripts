@@ -19,7 +19,7 @@ margin=5
 borderSize=4 # tested in dual screen setup; window position corrected by size of border*2
 
 let "posX = $screenX - $winX  - $margin - $borderSize"
-let "posY1 = $panel + $margin"
+let "posY1 = $panel + $margin + $borderSize / 2"
 let "posY2 = $screenY - $winY - $margin - $borderSize"
 
 # functions
@@ -47,7 +47,7 @@ toggleMpv()
 
 closeMpv()
 {
-  xdotool windowclose $1
+  xdotool key --clearmodifiers --window $1 "q"
 }
 
 
