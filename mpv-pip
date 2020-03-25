@@ -12,15 +12,20 @@ moveDown=0
 
 screenX=1920
 screenY=1080
-winX=426
-winY=240
+winW=426
+winH=240
+winWM=1280
+winHM=720
 panel=23
 margin=5
 borderSize=4 # tested in dual screen setup; window position corrected by size of border*2
 
-let "posX = $screenX - $winX  - $margin - $borderSize"
+let "posX = $screenX - $winW  - $margin - $borderSize"
 let "posY1 = $panel + $margin + $borderSize / 2"
-let "posY2 = $screenY - $winY - $margin - $borderSize"
+let "posY2 = $screenY - $winH - $margin - $borderSize"
+
+let "posXM = $screenX / 2 - $winWM / 2"
+let "posYM = $screenY / 2 - $winHM / 2"
 
 # functions
 helpFunction()
@@ -29,6 +34,7 @@ helpFunction()
   echo "Usage: $0 --up/--down"
   echo -e "\t--up: move window to top right of the sreen"
   echo -e "\t--down: move window to bottom right of the sreen"
+  echo -e "\t--center: move window to center of the screen"
   echo -e "\t--toggle: toggle between play and pause"
   echo -e "\t--close: close instance of mpv"
   exit 1
@@ -54,8 +60,9 @@ closeMpv()
 for i in "$@"
 do
     case $i in
-        --up ) moveWin $winId $posX $posY1 $winX $winY ;;
-        --down ) moveWin $winId $posX $posY2 $winX $winY ;;
+        --up ) moveWin $winId $posX $posY1 $winW $winH ;;
+        --down ) moveWin $winId $posX $posY2 $winW $winH ;;
+        --center ) moveWin $winId $posXM $posYM $winWM $winHM ;;
         --toggle ) toggleMpv $winId ;;
         --close ) closeMpv $winId ;;
         * ) helpFunction ;;
