@@ -18,11 +18,10 @@ winWM=1280
 winHM=720
 panel=23
 margin=5
-borderSize=4 # tested in dual screen setup; window position corrected by size of border*2
 
-let "posX = $screenX - $winW  - $margin - $borderSize"
-let "posY1 = $panel + $margin + $borderSize / 2"
-let "posY2 = $screenY - $winH - $margin - $borderSize"
+let "posX = $screenX - $winW  - $margin"
+let "posY1 = $panel + $margin"
+let "posY2 = $screenY - $winH - $margin"
 
 let "posXM = $screenX / 2 - $winWM / 2"
 let "posYM = $screenY / 2 - $winHM / 2"
@@ -42,9 +41,25 @@ helpFunction()
 
 moveWin()
 {
+  xdotool windowunmap --sync $1
   xdotool windowsize $1 $4 $5
   xdotool windowmove $1 $2 $3
+  xdotool set_window --classname mpv-pip $1
+  xdotool set_window --overrideredirect 1 $1 # window appear on all tags without border and can't be focused'
+  xdotool windowraise $1
+  xdotool windowmap $1
 }
+
+centerWin()
+{
+  xdotool windowunmap --sync $1
+  xdotool windowsize $1 $4 $5
+  xdotool windowmove $1 $2 $3
+  xdotool set_window --classname mpv-center $1
+  xdotool set_window --overrideredirect 0 $1
+  xdotool windowmap $1
+}
+
 
 toggleMpv()
 {
@@ -62,7 +77,7 @@ do
     case $i in
         --up ) moveWin $winId $posX $posY1 $winW $winH ;;
         --down ) moveWin $winId $posX $posY2 $winW $winH ;;
-        --center ) moveWin $winId $posXM $posYM $winWM $winHM ;;
+        --center ) centerWin $winId $posXM $posYM $winWM $winHM ;;
         --toggle ) toggleMpv $winId ;;
         --close ) closeMpv $winId ;;
         * ) helpFunction ;;
