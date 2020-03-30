@@ -1,0 +1,10 @@
+#!/bin/sh
+
+tvfolder="/home/shiss/Wideo/tv-shows/"
+choice=$(find $tvfolder -mindepth 2 -type d -printf "%P\n" | sed 's/.*\///g' |
+  dmenu -i -l 8 -p "${1}" -fn "${3}" -nb "${4}" -nf "${5}" -sb "${6}" -sf "${7}" -x "${8}" -y "${9}" -w "${10}" -h "${11}")
+
+if [ -n "$choice" ]; then
+  path=$(find $tvfolder -mindepth 2 -type d -printf "%P\n" | grep "$choice")
+  cd "$tvfolder$path" && tvpick
+fi

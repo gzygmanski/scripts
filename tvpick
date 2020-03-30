@@ -1,0 +1,4 @@
+#!/bin/sh
+
+files=$(sxiv -to *thumb.* | grep -Po "S[0-9]+E[0-9]+" | sed 's/^/\*/;s/$/\*.mkv/g' | tr '\n' ' ')
+[ -z "$files" ] || mpv --no-terminal $(echo "$files") & disown
