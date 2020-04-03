@@ -10,6 +10,23 @@ helpFunction()
     exit 1
 }
 
+getIco()
+{
+    if [ $1 -lt 10 ] || [ $1 -eq 10 ]; then
+        volupico="${HOME}/scripts/icons/volup0.png"
+        voldownico="${HOME}/scripts/icons/voldown0.png"
+    elif [ $1 -gt 10 ] && [ $1 -lt 50 ] || [ $1 -eq 50 ]; then
+        volupico="${HOME}/scripts/icons/volup1.png"
+        voldownico="${HOME}/scripts/icons/voldown1.png"
+    elif [ $1 -gt 50 ] && [ $1 -lt 90 ] || [ $1 -eq 90 ]; then
+        volupico="${HOME}/scripts/icons/volup2.png"
+        voldownico="${HOME}/scripts/icons/voldown2.png"
+    elif [ $1 -gt 90 ]; then
+        volupico="${HOME}/scripts/icons/volup3.png"
+        voldownico="${HOME}/scripts/icons/voldown3.png"
+    fi
+}
+
 while getopts "s:i:d:" opt
 do
     case "$opt" in
@@ -29,20 +46,28 @@ if [ "$choosedSource" == "mpd" ]; then
     if [[ -z "$increasedValue" ]] && [[ "$decreasedValue" =~ [0-9] ]]; then
         value="-$decreasedValue"
         mpc -q volume $value
+        vol=`mpc -q volume | grep -Po "[0-9]+"`
+        getIco $vol
         dunstify -u low -i $voldownico " Volume" " mpd: $(mpc volume | awk '{print substr($0,8)}' | sed 's/ //g')" -r $id
     elif [[ -z "$decreasedValue" ]] && [[ "$increasedValue" =~ [0-9] ]]; then
         value="+$increasedValue"
         mpc -q volume $value
+        vol=`mpc -q volume | grep -Po "[0-9]+"`
+        getIco $vol
         dunstify -u low -i $volupico " Volume" " mpd: $(mpc volume | awk '{print substr($0,8)}' | sed 's/ //g')" -r $id
     else
         helpFunction
     fi
-else 
+else
     if [[ -z "$increasedValue" ]] && [[ "$decreasedValue" =~ [0-9] ]]; then
         pamixer -d $decreasedValue
+        vol=`pamixer --get-volume`
+        getIco $vol
         dunstify -u low -i $voldownico " Volume" " sys: $(pamixer --get-volume-human)" -r $id
     elif [[ -z "$decreasedValue" ]] && [[ "$increasedValue" =~ [0-9] ]]; then
         pamixer -i $increasedValue
+        vol=`pamixer --get-volume`
+        getIco $vol
         dunstify -u low -i $volupico " Volume" " sys: $(pamixer --get-volume-human)" -r $id
     else
         helpFunction
