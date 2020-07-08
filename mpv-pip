@@ -16,7 +16,7 @@ winW=426
 winH=240
 winWM=1280
 winHM=720
-panel=23
+panel=25
 margin=5
 
 let "posX = $screenX - $winW  - $margin"

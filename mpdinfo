@@ -29,7 +29,7 @@ ARTIST="$(mpc current --format '%artist%')"
 ALBUM="$(mpc current --format '%album%')"
 SONG="$(mpc current --format '%title%')"
 
-ALBUM_PATH="$(echo /mnt/nfs/priv-media/music/$(mpc current -f %file%)|sed 's_\(.*\)/\(.*\)/\(.*\)_\1/\2/_')"
+ALBUM_PATH="$(echo $MUSIC/$(mpc current -f %file%)|sed 's_\(.*\)/\(.*\)/\(.*\)_\1/\2/_')"
 ALBUM_COVER="$(find $ALBUM_PATH -iname 'cover.*'|grep -m1 '')"
 EMPTY_ALBUM_COVER="$HOME/scripts/empty-album-cover.png"
 
