@@ -1,0 +1,100 @@
+#!/usr/bin/env python3
+
+from os import path, environ, chdir
+from subprocess import Popen
+from glob import glob
+from mpd import MPDClient
+
+def get_albumart(file_path):
+    temp_cover_path = '/tmp/cover2.png'
+    convert_cmd = 'convert "{}" -resize 50x50 "{}"'
+    chdir(path.split(file_path)[0])
+    cover_paths = glob(
+        '[C|c]over.*',
+        recursive=True
+    )
+    if cover_paths:
+        process = Popen(convert_cmd.format(
+            path.join(path.split(file_path)[0], cover_paths[0]),
+            temp_cover_path
+        ), shell=True)
+    else:
+        process = Popen(convert_cmd.format(
+            path.join(environ['HOME'], 'scripts/cover.png'),
+            temp_cover_path
+        ), shell=True)
+
+    process.wait()
+    return temp_cover_path
+
+def get_sticker(client, song, sticker):
+    try:
+        return int(client.sticker_get('song', song, sticker))
+    except:
+        return 0
+
+def get_rating(case):
+    rating = {
+        0: '六 六 六 六 六   ',
+        1: '留 六 六 六 六   ',
+        2: '留 留 六 六 六   ',
+        3: '留 留 留 六 六   ',
+        4: '留 留 留 留 六   ',
+        5: '留 留 留 留 留   '
+    }
+    return rating.get(case, '?')
+
+def get_favourite(case):
+    favourite = {
+        0: ' ',
+        1: ' '
+    }
+    return favourite.get(case, ' ')
+
+def get_dunst_title(state, stars, favourite):
+    title = {
+            'play': 'Playing',
+            'pause': 'Paused',
+            'stop': 'Stopped',
+    }
+    return ' {} {}{}'.format(
+        title.get(state, 'Invalid state'),
+        get_rating(stars),
+        get_favourite(favourite)
+    )
+
+def get_dunst_description(song):
+    return ' {} - {}'.format(
+        song.get('artist', '?'),
+        song.get('title', '?')
+    )
+
+def loop(client, dunst_id):
+    while(True):
+        client.idle('player')
+        current_song = client.currentsong()
+        client_state = client.status()['state']
+
+        if current_song.get('file', False):
+            stars = get_sticker(client, current_song['file'], 'stars')
+            favourite = get_sticker(client, current_song['file'], 'favourite')
+            file_path = path.join(environ['MUSIC'], current_song['file'])
+            dunst_cmd = 'dunstify -u normal -i "{}" "{}" "{}" -r {}'.format(
+                get_albumart(file_path),
+                get_dunst_title(client_state, stars, favourite),
+                get_dunst_description(current_song),
+                dunst_id
+            )
+            Popen(dunst_cmd, shell=True)
+
+def main(host='localhost', port=6600, dunst_id=99000):
+    client = MPDClient()
+    client.connect(host, port)
+    try:
+        loop(client, dunst_id)
+    except:
+        client.close()
+        client.disconnect()
+
+if __name__ == '__main__':
+    main()

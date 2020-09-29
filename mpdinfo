@@ -1,44 +1,76 @@
-#!/bin/zsh
+#!/usr/bin/env python3
 
-ID=99000
-RATING=$(mpc sticker "$(mpc current -f '%file%')" list |grep 'stars' |sed -e 's/[^0-9]/ /g' -e 's/^ *//g')
-FAVOURITE=$(mpc sticker "$(mpc current -f '%file%')" list |grep 'favourite' |sed -e 's/[^0-9]/ /g' -e 's/^ *//g')
+from os import path, environ, chdir
+from subprocess import Popen
+from glob import glob
+from mpd import MPDClient
 
-if [[ -n $RATING ]]; then
-    case "$RATING" in
-    "1") RATE="留 六 六 六 六   " ;;
-    "2") RATE="留 留 六 六 六   " ;;
-    "3") RATE="留 留 留 六 六   " ;;
-    "4") RATE="留 留 留 留 六   " ;;
-    "5") RATE="留 留 留 留 留   " ;;
-    esac
-else
-    RATE="六 六 六 六 六   "
-fi
+def get_albumart(file_path):
+    chdir(path.split(file_path)[0])
+    cover_paths = glob(
+        '[C|c]over.*',
+        recursive=True
+    )
+    if cover_paths:
+        return path.join(path.split(file_path)[0], cover_paths[0])
+    else:
+        return path.join(environ['HOME'], 'scripts/cover.png')
 
-if [[ -n $FAVOURITE ]]; then
-    case "$FAVOURITE" in
-    "0") FAVICO=" " ;;
-    "1") FAVICO=" " ;;
-    esac
-else
-    FAVICO=" "
-fi
+def get_sticker(client, song, sticker):
+    try:
+        return int(client.sticker_get('song', song, sticker))
+    except:
+        return 0
 
-ARTIST="$(mpc current --format '%artist%')"
-ALBUM="$(mpc current --format '%album%')"
-SONG="$(mpc current --format '%title%')"
+def get_rating(case):
+    rating = {
+        0: '六 六 六 六 六   ',
+        1: '留 六 六 六 六   ',
+        2: '留 留 六 六 六   ',
+        3: '留 留 留 六 六   ',
+        4: '留 留 留 留 六   ',
+        5: '留 留 留 留 留   '
+    }
+    return rating.get(case, '?')
 
-ALBUM_PATH="$(echo $MUSIC/$(mpc current -f %file%)|sed 's_\(.*\)/\(.*\)/\(.*\)_\1/\2/_')"
-ALBUM_COVER="$(find $ALBUM_PATH -iname 'cover.*'|grep -m1 '')"
-EMPTY_ALBUM_COVER="$HOME/scripts/empty-album-cover.png"
+def get_favourite(case):
+    favourite = {
+        0: ' ',
+        1: ' '
+    }
+    return favourite.get(case, ' ')
 
-DUNST_TITLE=" $SONG"
-DUNST_DESC=" $ALBUM\n by $ARTIST\n $RATE$FAVICO "
+def get_dunst_title(song):
+    return ' {}'.format(song.get('title', '?'))
 
-if [[ -n $ALBUM_COVER ]] && [[ -a $ALBUM_COVER ]]; then
-    dunstify -u normal -i $ALBUM_COVER $DUNST_TITLE $DUNST_DESC -r $ID
-else
-    dunstify -u normal -i $EMPTY_ALBUM_COVER $DUNST_TITLE $DUNST_DESC -r $ID
-fi
+def get_dunst_description(song, stars, favourite):
+    return '\n {}\n by {}\n {}{}'.format(
+        song.get('album', '?'),
+        song.get('artist', '?'),
+        get_rating(stars),
+        get_favourite(favourite)
+    )
 
+def main(host='localhost', port=6600, dunst_id=99000):
+    client = MPDClient()
+    client.connect(host, port)
+    current_song = client.currentsong()
+    stars = get_sticker(client, current_song['file'], 'stars')
+    favourite = get_sticker(client, current_song['file'], 'favourite')
+    client.close()
+    client.disconnect()
+
+    if not current_song:
+        exit()
+    else:
+        file_path = path.join(environ['MUSIC'], current_song['file'])
+        dunst_cmd = 'dunstify -u normal -i "{}" "{}" "{}" -r {}'.format(
+            get_albumart(file_path),
+            get_dunst_title(current_song),
+            get_dunst_description(current_song, stars, favourite),
+            dunst_id
+        )
+        Popen(dunst_cmd, shell=True)
+
+if __name__ == '__main__':
+    main()
