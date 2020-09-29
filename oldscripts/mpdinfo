@@ -1,0 +1,44 @@
+#!/bin/zsh
+
+ID=99000
+RATING=$(mpc sticker "$(mpc current -f '%file%')" list |grep 'stars' |sed -e 's/[^0-9]/ /g' -e 's/^ *//g')
+FAVOURITE=$(mpc sticker "$(mpc current -f '%file%')" list |grep 'favourite' |sed -e 's/[^0-9]/ /g' -e 's/^ *//g')
+
+if [[ -n $RATING ]]; then
+    case "$RATING" in
+    "1") RATE="留 六 六 六 六   " ;;
+    "2") RATE="留 留 六 六 六   " ;;
+    "3") RATE="留 留 留 六 六   " ;;
+    "4") RATE="留 留 留 留 六   " ;;
+    "5") RATE="留 留 留 留 留   " ;;
+    esac
+else
+    RATE="六 六 六 六 六   "
+fi
+
+if [[ -n $FAVOURITE ]]; then
+    case "$FAVOURITE" in
+    "0") FAVICO=" " ;;
+    "1") FAVICO=" " ;;
+    esac
+else
+    FAVICO=" "
+fi
+
+ARTIST="$(mpc current --format '%artist%')"
+ALBUM="$(mpc current --format '%album%')"
+SONG="$(mpc current --format '%title%')"
+
+ALBUM_PATH=$(echo $MUSIC/$(mpc current -f %file%)|sed 's_\(.*\)/\(.*\)/\(.*\)_\1/\2/_')
+ALBUM_COVER=$(find "$ALBUM_PATH" -iname 'cover.*'|grep -m1 '')
+EMPTY_ALBUM_COVER="$HOME/scripts/empty-album-cover.png"
+
+DUNST_TITLE=" $SONG"
+DUNST_DESC=" $ALBUM\n by $ARTIST\n $RATE$FAVICO "
+
+if [[ -n $ALBUM_COVER ]] && [[ -a $ALBUM_COVER ]]; then
+    dunstify -u normal -i $ALBUM_COVER $DUNST_TITLE $DUNST_DESC -r $ID
+else
+    dunstify -u normal -i $EMPTY_ALBUM_COVER $DUNST_TITLE $DUNST_DESC -r $ID
+fi
+

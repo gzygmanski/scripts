@@ -2,12 +2,12 @@
 
 ID=99000
 COVER_PATH="/tmp/cover.png"
-EMPTY_COVER_PATH="$HOME/scripts/empty-album-cover.png"
+EMPTY_COVER_PATH="$HOME/scripts/cover.png"
 
 getdata() {
     CURRENT_SONG_INFO="$(mpc current --wait)"
     ALBUM_PATH="$(echo $MUSIC/$(mpc current -f %file%)|sed 's_\(.*\)/\(.*\)/\(.*\)_\1/\2/_')"
-    ALBUM_COVER="$(find $ALBUM_PATH -iname 'cover.*'|grep -m1 '')"    
+    ALBUM_COVER="$(find $ALBUM_PATH -iname 'cover.*'|grep -m1 '')"
     RATING=$(mpc sticker "$(mpc current -f '%file%')" list |grep 'stars' |sed -e 's/[^0-9]/ /g' -e 's/^ *//g')
     FAVOURITE=$(mpc sticker "$(mpc current -f '%file%')" list |grep 'favourite' |sed -e 's/[^0-9]/ /g' -e 's/^ *//g')
 

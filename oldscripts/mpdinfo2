@@ -1,0 +1,76 @@
+#!/usr/bin/python3
+
+from os import path, environ, chdir
+from mpd import MPDClient
+from subprocess import Popen
+import glob
+
+def get_albumart(file_path):
+    chdir(path.split(file_path)[0])
+    cover_paths = glob.glob(
+        'cover.*',
+        recursive=True
+    )
+    if cover_paths:
+        return path.join(path.split(file_path)[0], cover_paths[0])
+    else:
+        return path.join(environ['HOME'], 'scripts/empty-album-cover.png')
+
+def get_sticker(client, song, sticker):
+    try:
+        return int(client.sticker_get('song', song, sticker))
+    except:
+        return 0
+
+def get_rating(case):
+    rating = {
+        0: '六 六 六 六 六   ',
+        1: '留 六 六 六 六   ',
+        2: '留 留 六 六 六   ',
+        3: '留 留 留 六 六   ',
+        4: '留 留 留 留 六   ',
+        5: '留 留 留 留 留   '
+    }
+    return rating.get(case, '?')
+
+def get_favourite(case):
+    favourite = {
+        0: ' ',
+        1: ' '
+    }
+    return favourite.get(case, '?')
+
+def get_dunst_title(song):
+    return ' {}'.format(song['title'])
+
+def get_dunst_description(song, stars, favourite):
+    return ' {}\n by {}\n {}{}'.format(
+        song['album'],
+        song['artist'],
+        get_rating(stars),
+        get_favourite(favourite)
+    )
+
+def main(host='localhost', port=6600, dunst_id=99000):
+    client = MPDClient()
+    client.connect(host, port)
+    current_song = client.currentsong()
+    stars = get_sticker(client, current_song['file'], 'stars')
+    favourite = get_sticker(client, current_song['file'], 'favourite')
+    client.close()
+    client.disconnect()
+
+    if not current_song:
+        exit()
+    else:
+        file_path = path.join(environ['MUSIC'], current_song['file'])
+        dunst_cmd = 'dunstify -u normal -i "{}" "{}" "{}" -r {}'.format(
+            get_albumart(file_path),
+            get_dunst_title(current_song),
+            get_dunst_description(current_song, stars, favourite),
+            dunst_id
+        )
+        Popen(dunst_cmd, shell=True)
+
+if __name__ == '__main__':
+    main()

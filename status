@@ -2,7 +2,7 @@
 while true; do
     mpd_status="$(mpc | grep 'playing\|paused' | awk '{print $1}')"
     mpd_time="$(mpc | grep 'playing\|paused' | awk '{print $3}')"
-    current_time="$(date '+(%a) %d/%m/%y  %H:%M CET')"
+    current_time="$(date '+%a/%d/%m/%y  %H:%M CET')"
 
     if [ "$mpd_status" == "[playing]" ]; then
         xsetroot -name "  $mpd_time  ${current_time^^}"
