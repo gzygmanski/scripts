@@ -1,15 +1,8 @@
 #!/bin/sh
 
-winId=$(xdotool search --class mpv)
-if [ -z "$winId" ]; then
-  echo "mpv window not found"
-  exit 1
-fi
-
 # vars
 moveUp=0
 moveDown=0
-
 screenX=1920
 screenY=1080
 winW=426
@@ -19,11 +12,12 @@ winHM=720
 panel=25
 margin=5
 
-let "posX = $screenX - $winW  - $margin"
+let "posX1 = $screenX - $winW  - $margin"
+let "posX2 = $margin"
 let "posY1 = $panel + $margin"
 let "posY2 = $screenY - $winH - $margin"
 
-let "posXM = $screenX / 2 - $winWM / 2"
+let "posX1M = $screenX / 2 - $winWM / 2"
 let "posYM = $screenY / 2 - $winHM / 2"
 
 # functions
@@ -33,9 +27,11 @@ helpFunction()
   echo "Usage: $0 --up/--down"
   echo -e "\t--up: move window to top right of the sreen"
   echo -e "\t--down: move window to bottom right of the sreen"
+  echo -e "\t--left: move window to top left of the sreen"
   echo -e "\t--center: move window to center of the screen"
   echo -e "\t--toggle: toggle between play and pause"
   echo -e "\t--close: close instance of mpv"
+  echo -e "\t--seek-[forward|backward]: seek [forward|backward]"
   exit 1
 }
 
@@ -44,6 +40,7 @@ moveWin()
   xdotool windowunmap --sync $1
   xdotool windowsize $1 $4 $5
   xdotool windowmove $1 $2 $3
+  xdotool set_window --class $6 $1
   xdotool set_window --classname mpv-pip $1
   xdotool set_window --overrideredirect 1 $1 # window appear on all tags without border and can't be focused'
   xdotool windowraise $1
@@ -55,15 +52,44 @@ centerWin()
   xdotool windowunmap --sync $1
   xdotool windowsize $1 $4 $5
   xdotool windowmove $1 $2 $3
+  xdotool set_window --class mpv $1
   xdotool set_window --classname mpv-center $1
   xdotool set_window --overrideredirect 0 $1
   xdotool windowmap $1
 }
 
-
 toggleMpv()
 {
   xdotool key --clearmodifiers --window $1 "p"
+}
+
+seekForwardMpv()
+{
+  xdotool key --clearmodifiers --window $1 "Right"
+}
+
+seekBackwardMpv()
+{
+  xdotool key --clearmodifiers --window $1 "Left"
+}
+
+toggleWatcher()
+{
+  pid=`pgrep mpv-pip-watcher`
+  if [ -z "$pid" ]; then
+    xdotool set_window --classname mpv-pip $1
+    mpv-pip-watcher 1>/dev/null & disown
+  else
+    kill $pid
+  fi
+}
+
+disableWatcher()
+{
+  pid=`pgrep mpv-pip-watcher`
+  if [ -n "$pid" ]; then
+    kill $pid
+  fi
 }
 
 closeMpv()
@@ -71,16 +97,29 @@ closeMpv()
   xdotool key --clearmodifiers --window $1 "q"
 }
 
+if [[ -z "$@" ]]; then
+  helpFunction
+fi
 
-for i in "$@"
-do
-    case $i in
-        --up ) moveWin $winId $posX $posY1 $winW $winH ;;
-        --down ) moveWin $winId $posX $posY2 $winW $winH ;;
-        --center ) centerWin $winId $posXM $posYM $winWM $winHM ;;
-        --toggle ) toggleMpv $winId ;;
-        --close ) closeMpv $winId ;;
-        * ) helpFunction ;;
-    esac
-done
-
+winId=$(xdotool search --class mpv)
+if [ -z "$winId" ]; then
+  echo "mpv window not found"
+  exit 1
+else
+  for i in "$@"
+  do
+      case $i in
+          --up ) moveWin $winId $posX1 $posY1 $winW $winH mpv-up ;;
+          --down ) moveWin $winId $posX1 $posY2 $winW $winH mpv-down ;;
+          --left ) moveWin $winId $posX2 $posY1 $winW $winH mpv-left ;;
+          --center ) centerWin $winId $posX1M $posYM $winWM $winHM ;;
+          --toggle ) toggleMpv $winId ;;
+          --seek-forward ) seekForwardMpv $winId ;;
+          --seek-backward ) seekBackwardMpv $winId ;;
+          --toggle-watcher ) toggleWatcher $winId ;;
+          --disable-watcher ) disableWatcher ;;
+          --close ) closeMpv $winId ;;
+          * ) helpFunction ;;
+      esac
+  done
+fi
