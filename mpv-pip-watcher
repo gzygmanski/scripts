@@ -16,7 +16,7 @@ while [ true ]; do
   windowY=`xdotool getwindowfocus getwindowgeometry --shell| cut -f2 -d=|sed -n 3p`
   windowH=`xdotool getwindowfocus getwindowgeometry --shell| cut -f2 -d=|sed -n 5p`
   if [ $windowX -lt $SCREENX ]; then
-    if [ $windowX -eq 0 ]; then
+    if [ $windowX -lt 431 ]; then
       xdotool search --class mpv-up || `mpv-pip --up && sleep .35`
     elif [ $windowY -eq $PANEL ]; then
       if [ $windowH -eq $fullHeightWin ]; then
