@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PANEL=25
+PANEL=`xdotool search --class dwm getwindowgeometry --shell| cut -f2 -d=| sed -n 5p`
 BORDER=2
 SCREENX=1920
 SCREENY=1080

@@ -9,8 +9,8 @@ winW=426
 winH=240
 winWM=1280
 winHM=720
-panel=25
-margin=5
+panel=`xdotool search --class dwm getwindowgeometry --shell| cut -f2 -d=| sed -n 5p`
+margin=6
 
 let "posX1 = $screenX - $winW  - $margin"
 let "posX2 = $margin"
